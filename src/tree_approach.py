@@ -75,12 +75,19 @@ def train_and_test_grid(train, test, features, target, random_state=0):
     print('Length valid:', len(x_valid.index))
 
     parameters = {
-        'max_depth': [2 ]
+        # 'n_estimators': [1, 5, 20, 50, 100, 150],
+        'max_depth': [3, 4, 5] #, 6, 7, 8, 9, 10]
     }
 
-    xgb_model = xgb.XGBClassifier()
+    set_params = {
+        'objective': 'multi:softprob',
+        'num_class': 12,
+        'eval_metric': 'mlogloss'
+    }
 
-    clf = GridSearchCV(xgb_model, parameters, verbose=2, refit=True)
+    xgb_model = xgb.XGBClassifier(set_params)
+
+    clf = GridSearchCV(xgb_model, parameters, verbose=3, refit=True, cv=3)
     clf.fit(train[features], train[target])
 
     print(clf.best_params_)
