@@ -5,9 +5,10 @@
 
 import xgboost as xgb
 import time
-from sklearn.cross_validation import train_test_split
 import random
 from sklearn.metrics import log_loss
+from sklearn.grid_search import GridSearchCV
+from sklearn.cross_validation import *
 
 random.seed(2000)
 
@@ -64,3 +65,32 @@ def train_and_test_xgb(train, test, features, target, random_state=0):
     return test_prediction.tolist(), score
 
 
+def train_and_test_grid(train, test, features, target, random_state=0):
+    start_time = time.time()
+
+    test_size = 0.3
+
+    x_train, x_valid = train_test_split(train, test_size=test_size, random_state=random_state)
+    print('Length train:', len(x_train.index))
+    print('Length valid:', len(x_valid.index))
+
+    parameters = {
+        'max_depth': [2 ]
+    }
+
+    xgb_model = xgb.XGBClassifier()
+
+    clf = GridSearchCV(xgb_model, parameters, verbose=2, refit=True)
+    clf.fit(train[features], train[target])
+
+    print(clf.best_params_)
+    print(clf.best_estimator_)
+
+    print("Validating...")
+    check = clf.best_estimator_.predict_proba(x_valid[features])
+    score = log_loss(x_valid[target].tolist(), check)
+
+    print("Predict test set...")
+    test_prediction = clf.best_estimator_.predict_proba(test[features])
+    print('Training time: {} minutes'.format(round((time.time() - start_time) / 60, 2)))
+    return test_prediction.tolist(), score
