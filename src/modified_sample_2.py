@@ -152,8 +152,8 @@ X_train, X_val, y_train, y_val = train_test_split(
 #   Feature Sel
 ##################
 print("# Feature Selection")
-# selector = SelectPercentile(f_classif, percentile=23)
-selector = SelectPercentile(f_classif, percentile=35)
+selector = SelectPercentile(f_classif, percentile=23)
+# selector = SelectPercentile(f_classif, percentile=35)
 
 selector.fit(X_train, y_train)
 
@@ -183,17 +183,29 @@ params = {
     "alpha": 3,
 }
 
-watchlist = [(dtrain, 'train'), (dvalid, 'eval')]
-gbm = xgb.train(params, dtrain, 40, evals=watchlist,
-                early_stopping_rounds=25, verbose_eval=True)
 
 print("# Train")
+watchlist = [(dtrain, 'train'), (dvalid, 'eval')]
+'''
+gbm = xgb.train(params, dtrain, 1000, evals=watchlist,
+                early_stopping_rounds=50, verbose_eval=True)
+
+'''
+
 dtrain = xgb.DMatrix(train_sp, Y)
-gbm = xgb.train(params, dtrain, 40, verbose_eval=True)
+
+print(dtrain)
+
+
+gbm = xgb.train(params, dtrain,  40, evals=watchlist, verbose_eval=True)
+
+gbm.dump_model('dump.raw.txt')  # , 'feat_map.txt')
+
+'''
 y_pre = gbm.predict(xgb.DMatrix(test_sp))
 
 # This needs to be calculated
-loss = 2.5
+loss = 3.5
 
 # Write results
 result = pd.DataFrame(y_pre, columns=lable_group.classes_)
@@ -201,3 +213,4 @@ result["device_id"] = device_id
 result = result.set_index("device_id")
 result.to_csv('../submissions/' + str(loss) + '.gz', index=True,
               index_label='device_id', compression="gzip")
+'''
