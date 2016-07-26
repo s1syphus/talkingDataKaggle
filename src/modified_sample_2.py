@@ -152,7 +152,8 @@ X_train, X_val, y_train, y_val = train_test_split(
 #   Feature Sel
 ##################
 print("# Feature Selection")
-selector = SelectPercentile(f_classif, percentile=23)
+# selector = SelectPercentile(f_classif, percentile=23)
+selector = SelectPercentile(f_classif, percentile=35)
 
 selector.fit(X_train, y_train)
 
@@ -174,8 +175,8 @@ dvalid = xgb.DMatrix(X_val, y_val)
 params = {
     "objective": "multi:softprob",
     "num_class": 12,
-    # "booster": "gblinear",
-    "max_depth": 8,
+    "booster": "gblinear",
+    "max_depth": 6,
     "eval_metric": "mlogloss",
     "eta": 0.07,
     "silent": 1,
