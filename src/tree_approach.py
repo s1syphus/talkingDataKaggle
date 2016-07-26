@@ -13,6 +13,47 @@ from sklearn.cross_validation import *
 random.seed(2000)
 
 
+def train_and_test_sweep(train, test, features, target, random_state=0):
+    start_time = time.time()
+    sweep_parameters = {}
+
+    static_parameters = {}
+
+    x_train, x_valid = train_test_split(train, random_state=random_state)
+    y_train = x_train[target]
+    y_valid = x_valid[target]
+    d_train = xgb.DMatrix(x_train[features], y_train)
+    d_valid = xgb.DMatrix(x_valid[features], y_valid)
+
+    watchlist = [(d_train, 'train'), (d_valid, 'eval')]
+
+    params = {
+        "objective": "multi:softprob",
+        "num_class": 12,
+        "eta": 0.01,
+        "subsample": 0.9,
+        "silent": 1
+    }
+
+    num_boost_round = 1000
+    early_stopping_rounds = 50
+
+    # This is where the sweep will happen
+    gbm = xgb.train(params, d_train, num_boost_round, evals=watchlist, early_stopping_rounds=early_stopping_rounds)
+
+    best_model = gbm
+
+    print("Validating...")
+    check = best_model.predict(xgb.DMatrix(x_valid[features]), ntree_limit=best_model.best_ntree_limit)
+    score = log_loss(y_valid.tolist(), check)
+
+    print("Predict test set...")
+    test_prediction = best_model.predict(xgb.DMatrix(test[features]), ntree_limit=best_model.best_iteration)
+
+    print('Training time: {} minutes'.format(round((time.time() - start_time) / 60, 2)))
+    return test_prediction.tolist(), score
+
+
 def train_and_test_xgb(train, test, features, target, random_state=0):
     # Basic XGB
     eta = 0.2
@@ -39,8 +80,8 @@ def train_and_test_xgb(train, test, features, target, random_state=0):
     }
 
     # sweep this
-    num_boost_round = 500
-    early_stopping_rounds = 50
+    num_boost_round = 1000
+    early_stopping_rounds = 75
     test_size = 0.3
 
     x_train, x_valid = train_test_split(train, test_size=test_size, random_state=random_state)
@@ -75,8 +116,9 @@ def train_and_test_grid(train, test, features, target, random_state=0):
     print('Length valid:', len(x_valid.index))
 
     parameters = {
-        # 'n_estimators': [1, 5, 20, 50, 100, 150],
-        'max_depth': [3, 4, 5] #, 6, 7, 8, 9, 10]
+        'n_estimators': [1000],  # , 150, 250, 500, 750, 1000, 5000],  # , 1250, 1500, 2000, 5000],
+        'max_depth': [4],  # 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        'num_boost_rounds': [50, 100]
     }
 
     set_params = {
@@ -87,7 +129,10 @@ def train_and_test_grid(train, test, features, target, random_state=0):
 
     xgb_model = xgb.XGBClassifier(set_params)
 
-    clf = GridSearchCV(xgb_model, parameters, verbose=3, refit=True, cv=3)
+    print(xgb_model)
+    quit()
+
+    clf = GridSearchCV(xgb_model, parameters, verbose=3, refit=True, cv=3, scoring='log_loss')
     clf.fit(train[features], train[target])
 
     print(clf.best_params_)
