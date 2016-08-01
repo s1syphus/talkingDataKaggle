@@ -4,7 +4,6 @@
 
 import load_talking_data
 import datetime
-import pandas as pd
 import tree_approach
 import neural_network_approach
 
@@ -41,7 +40,7 @@ test = load_talking_data.read_or_load_test()
 features = list(test.columns.values)
 features.remove('device_id')
 
-test_prediction, score = tree_approach.train_and_test_sweep(train, test, features, 'group')
+test_prediction, score = tree_approach.train_and_test_xgb(train, test, features, 'group')
 
 # test_prediction, score = neural_network_approach.train_and_test(train, test, features, 'group')
 print("LS: {}".format(round(score, 5)))
