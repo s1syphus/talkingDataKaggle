@@ -1,11 +1,13 @@
 """
     This loads the talking data
+    This should be basic and should not change much
 """
 
 import numpy as np
 import pandas as pd
 import os
 from sklearn.feature_extraction import DictVectorizer
+import glob
 
 
 def read_or_load_file(file_path):
@@ -59,19 +61,12 @@ def read_or_load_events():
     return events_small
 
 
-def read_or_load_app_events():
-    event_file = '../data/events.csv'
-    events = read_or_load_file(event_file)
-
-
 def read_or_load_phone_brand():
     phone_brand_file = '../data/phone_brand_device_model.csv'
     phone_brand = read_or_load_file(phone_brand_file)
     phone_brand.drop_duplicates('device_id', keep='first', inplace=True)
     phone_brand = encode_one_hot(phone_brand, cols=['phone_brand'])
     phone_brand = encode_one_hot(phone_brand, cols=['device_model'])
-    # phone_brand = map_column(phone_brand, 'phone_brand')
-    # phone_brand = map_column(phone_brand, 'device_model')
     return phone_brand
 
 
@@ -94,11 +89,18 @@ def encode_one_hot(df, cols):
     return df
 
 
-train = read_or_load_train()
-test = read_or_load_test()
-# Features
-features = list(test.columns.values)
-features.remove('device_id')
-print('Length of train: ', len(train))
-print('Length of test: ', len(test))
-print('Features [{}]: {}'.format(len(features), sorted(features)))
+def read_load_all_data():
+    all_file_names = glob.glob('../data/*.csv')
+    all_files = pd.DataFrame()
+    for file_name in all_file_names:
+        pickled_name = '../data/pickled/' + os.path.basename(file_name) + '.pkl'
+        if os.path.isfile(pickled_name):
+            my_file = pd.read_pickle(pickled_name)
+        else:
+            my_file = pd.read_csv(file_name)
+            my_file.to_pickle(pickled_name)
+        all_files.append(my_file)
+    return
+
+
+read_load_all_data()
