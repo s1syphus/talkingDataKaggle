@@ -1,0 +1,5 @@
+"""
+    Kaggle Competition talking data
+"""
+
+
