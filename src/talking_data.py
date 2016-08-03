@@ -47,8 +47,21 @@ def get_raw_train_data():
     """
     train_data = read_or_load_raw_file('../data/gender_age_train.csv')
     # This does not really help us, the group is what is important
-    train_data = train_data.drop(['gender', 'age'])
+    train_data = train_data.drop(['gender', 'age'], axis=1)
     return train_data
 
 
+def get_processed_train_data():
+    raw_train_data = get_raw_train_data()
+    phone_brand_model = read_or_load_raw_file('../data/phone_brand_device_model.csv')
+    # Temporary for testing
+    processed_train_data = raw_train_data.head(1)
+    processed_train_data = pd.concat([processed_train_data, phone_brand_model], axis=1, join='inner')
+    # remove the id at the end
+    # processed_train_data = processed_train_data.drop('device_id', axis=1)
+    return processed_train_data
 
+
+def get_processed_test_data():
+    raw_test_data = get_raw_test_data()
+    return raw_test_data
