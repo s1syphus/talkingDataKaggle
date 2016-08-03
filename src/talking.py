@@ -16,7 +16,7 @@ events = td.read_or_load_raw_file('../data/events.csv')
 app_events = td.read_or_load_raw_file('../data/app_events.csv')
 app_labels = td.read_or_load_raw_file('../data/app_labels.csv')
 label_categories = td.read_or_load_raw_file('../data/label_categories.csv')
-
+histogram_installed = td.get_histogram('installed')
 # test = td.get_processed_test_data()
 
 # create submission stuff
