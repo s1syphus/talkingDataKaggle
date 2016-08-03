@@ -26,22 +26,15 @@ def create_submission(score, test, prediction):
         f.write(str1)
     f.close()
 
-'''
-phone_data = load_talking_data.read_or_load_phone_brand()
-print(type(phone_data))
-print(phone_data)
-
-print(pandas.get_dummies(phone_data).info())
-'''
-
 train = load_talking_data.read_or_load_train()
 test = load_talking_data.read_or_load_test()
 # Features
 features = list(test.columns.values)
 features.remove('device_id')
 
-test_prediction, score = tree_approach.train_and_test_xgb(train, test, features, 'group')
+# test_prediction, score = tree_approach.train_and_test_xgb(train, test, features, 'group')
+# neural_network_approach.train_and_test(train, test)
 
 # test_prediction, score = neural_network_approach.train_and_test(train, test, features, 'group')
-print("LS: {}".format(round(score, 5)))
-create_submission(score, test, test_prediction)
+# print("LS: {}".format(round(score, 5)))
+# create_submission(score, test, test_prediction)

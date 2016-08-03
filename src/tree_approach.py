@@ -7,7 +7,6 @@ import xgboost as xgb
 import time
 import random
 from sklearn.metrics import log_loss
-from sklearn.grid_search import GridSearchCV
 from sklearn.cross_validation import *
 
 random.seed(2000)
