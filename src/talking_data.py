@@ -48,24 +48,47 @@ def get_raw_train_data():
     return train_data
 
 
-def get_histogram(feature):
+def get_installed_histogram(device_id, feature):
     events = read_or_load_raw_file('../data/events.csv')
-    app_labels = read_or_load_raw_file('../data/app_labels.csv')
+    # app_labels = read_or_load_raw_file('../data/app_labels.csv')
     app_events = read_or_load_raw_file('../data/app_events.csv')
-    label_categories = read_or_load_raw_file('../data/label_categories.csv')
-    # This makes the histogram, will add counts
-    histogram = label_categories['label_id']
+    # label_categories = read_or_load_raw_file('../data/label_categories.csv')
+    events_for_device = events[events['device_id'] == device_id]
 
-    return histogram
-    
-	
+    # change this, it only grabs the first event
+    apps_for_device = app_events[app_events['event_id'] == events_for_device.iloc[0]['event_id']]
+
+    # drop unneeded column
+    apps_for_device = apps_for_device.drop(['event_id', 'is_installed', 'is_active'], axis=1)
+
+
+    # change this, it only grabs the first app label
+    # categories_for_device = label_categories[label_categories['app_id'] == apps_for_device.iloc[0]['app_id']]
+
+    # categories_for_device =
+
+    # return app_events_for_device
+
+    # This just makes the histogram
+    # histogram = label_categories['label_id']
+    #
+    # return histogram
+
+# events.loc[events['device_id'] == train['device_id'][2]]
+'''
+2479656 -8260683887967679142
+
+data_array[data_array[attribute] == value][goal_attribute]
+
+
+'''
+
+
 def get_processed_train_data():
     raw_train_data = get_raw_train_data()
     phone_brand_model = read_or_load_raw_file('../data/phone_brand_device_model.csv')
-    events = read_or_load_raw_file('../data/events.csv')
-    app_labels = read_or_load_raw_file('../data/app_labels.csv')
     # Temporary for testing
-    processed_train_data = raw_train_data.head(1)
+    processed_train_data = raw_train_data
     processed_train_data = pd.merge(processed_train_data, phone_brand_model, on=['device_id'])
 #    processed_train_data['installed_apps_histogram'] = get_histogram('installed')
 #    processed_train_data['active_apps_histogram'] = get_histogram('active')
