@@ -20,6 +20,10 @@ train = td.get_processed_train_data()
 # hists = td.get_installed_histograms(train['device_id'])
 # test = td.get_processed_test_data()
 
+device_id = 29182687948017175
+
+test_device = train[train['device_id'] == 29182687948017175]['device_id']
+
 
 
 # hist = pd.DataFrame()

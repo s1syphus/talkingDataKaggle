@@ -66,16 +66,15 @@ def get_installed_histogram_for_device(device_id):
     apps_for_device = apps_for_device.drop_duplicates()
     labels_for_device = app_labels.merge(apps_for_device, on='app_id').drop('app_id', axis=1).drop_duplicates(
         'label_id')
-    data = {device_id: label_categories['label_id'].isin(labels_for_device['label_id']).astype(int)}
-    hist = pd.DataFrame(data)
+    hist = label_categories['label_id'].isin(labels_for_device['label_id']).astype(int).to_frame().drop('label_id', axis=1).transpose()
+    hist['device_id'] = device_id
     return hist
 
 
 def get_installed_histograms(device_ids):
     histograms = pd.DataFrame(device_ids)
     for device_id in device_ids:
-        print(device_id)
-        histograms[device_id] = get_installed_histogram_for_device(device_id).pivot()
+        histograms = histograms.append(get_installed_histogram_for_device(device_id))
     return histograms
 
 
@@ -85,13 +84,14 @@ def get_processed_train_data():
     # Temporary for testing
     processed_train_data = raw_train_data.head(20)
     processed_train_data = pd.merge(processed_train_data, phone_brand_model, on=['device_id'])
-
-    # processed_train_data = pd.merge(processed_train_data, get_installed_histograms(processed_train_data['device_id']),
-    #                             on=['device_id'])
+    # Breaking this apart for clarity
+    hists = get_installed_histograms(processed_train_data['device_id'])
+    processed_train_data = pd.merge(processed_train_data, hists, on=['device_id'])
 #    processed_train_data['active_apps_histogram'] = get_histogram('active')
 
     # remove the id at the end
     # processed_train_data = processed_train_data.drop('device_id', axis=1)
+    processed_train_data = processed_train_data.fillna(0)
     return processed_train_data
 
 
