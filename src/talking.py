@@ -28,19 +28,27 @@ label_categories = td.read_or_load_raw_file('../data/label_categories.csv')
 # Move this to histogram after working
 
 # Easier bookkeeping
-all_label_ids = label_categories['label_id'];
+all_label_ids = label_categories['label_id']
 
 device_id = 8663743929678393765
 events_for_device = events[events['device_id'] == device_id].drop(['device_id'], axis=1)
-app_events = app_events.drop(['is_installed', 'is_active'], axis=1);
+app_events = app_events.drop(['is_installed', 'is_active'], axis=1)
 apps_for_device = app_events.merge(events_for_device, on='event_id')
 apps_for_device = apps_for_device.drop('event_id', axis=1)
 # I think I need to do this to get the unique apps
 # There is potentially more data in here but I don't know how to use it effectively
-apps_for_device = apps_for_device['app_id'].unique()
+# change this later in order to get a usage histogram
+# for now just knowing what is installed is fine
+apps_for_device = apps_for_device.drop_duplicates()
+labels_for_device = app_labels.merge(apps_for_device, on='app_id').drop('app_id', axis=1).drop_duplicates('label_id')
+hist = all_label_ids.isin(labels_for_device['label_id']).astype(int)
 
 
-histogram = all_label_ids.
+# hist = pd.DataFrame()
+#
+# for x in label_categories:
+#     hist[x['label_id']] = x['label_id'].isin([labels_for_device])
+
 
 
 # create submission stuff
