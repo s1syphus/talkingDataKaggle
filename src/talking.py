@@ -16,32 +16,10 @@ import pandas as pd
 td.read_load_all_data()
 train = td.get_processed_train_data()
 # probably should save this at some point
-events = td.read_or_load_raw_file('../data/events.csv')
-# make this easier to use
-events = events.drop(['timestamp', 'longitude', 'latitude'], axis=1)
-app_events = td.read_or_load_raw_file('../data/app_events.csv')
-app_labels = td.read_or_load_raw_file('../data/app_labels.csv')
-label_categories = td.read_or_load_raw_file('../data/label_categories.csv')
-# histogram_installed = td.get_histogram(-8260683887967679142, 'installed')
+# histogram_installed = td.get_installed_histogram_for_device(-8260683887967679142)
+# hists = td.get_installed_histograms(train['device_id'])
 # test = td.get_processed_test_data()
 
-# Move this to histogram after working
-
-# Easier bookkeeping
-all_label_ids = label_categories['label_id']
-
-device_id = 8663743929678393765
-events_for_device = events[events['device_id'] == device_id].drop(['device_id'], axis=1)
-app_events = app_events.drop(['is_installed', 'is_active'], axis=1)
-apps_for_device = app_events.merge(events_for_device, on='event_id')
-apps_for_device = apps_for_device.drop('event_id', axis=1)
-# I think I need to do this to get the unique apps
-# There is potentially more data in here but I don't know how to use it effectively
-# change this later in order to get a usage histogram
-# for now just knowing what is installed is fine
-apps_for_device = apps_for_device.drop_duplicates()
-labels_for_device = app_labels.merge(apps_for_device, on='app_id').drop('app_id', axis=1).drop_duplicates('label_id')
-hist = all_label_ids.isin(labels_for_device['label_id']).astype(int)
 
 
 # hist = pd.DataFrame()
