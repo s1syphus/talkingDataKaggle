@@ -8,6 +8,7 @@
 from __future__ import division
 
 import talking_data as td
+import pandas as pd
 import talking_xgboost as tree
 import xgboost as xgb
 from sklearn.cross_validation import train_test_split
@@ -23,9 +24,8 @@ random.seed(2016)
 
 
 td.read_load_all_data()
+
 train = td.get_processed_train_data()
-# This needs to do stuff properly
-test = td.get_processed_test_data()
 
 #
 # # This seems to be doing something
@@ -95,5 +95,6 @@ test = td.get_processed_test_data()
 #
 #
 # # create submission stuff
+
 
 
