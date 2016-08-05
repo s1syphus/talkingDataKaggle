@@ -26,7 +26,7 @@ random.seed(2016)
 td.read_load_all_data()
 
 train = td.get_processed_train_data()
-
+# test = td.get_processed_test_data()
 #
 # # This seems to be doing something
 #
@@ -40,7 +40,7 @@ train = td.get_processed_train_data()
 # #
 # # # Move this out at some point
 # features = list(train.columns.values)
-#
+# #
 # random_state=0
 # eta = 0.1
 # max_depth = 3
@@ -48,7 +48,7 @@ train = td.get_processed_train_data()
 # colsample_bytree = 0.7
 # start_time = time.time()
 #
-# target = le.transform('group')
+# target = 'group'
 #
 # print('XGBoost params. ETA: {}, MAX_DEPTH: {}, SUBSAMPLE: {}, COLSAMPLE_BY_TREE: {}'.format(eta, max_depth, subsample, colsample_bytree))
 # params = {
@@ -77,10 +77,10 @@ train = td.get_processed_train_data()
 #
 # watchlist = [(dtrain, 'train'), (dvalid, 'eval')]
 # gbm = xgb.train(params, dtrain, num_boost_round, evals=watchlist, early_stopping_rounds=early_stopping_rounds, verbose_eval=True)
-# #
-# # print("Validating...")
-# # check = gbm.predict(xgb.DMatrix(x_valid[features]), ntree_limit=gbm.best_iteration)
-# # score = log_loss(y_valid.tolist(), check)
+#
+# print("Validating...")
+# check = gbm.predict(xgb.DMatrix(x_valid[features]), ntree_limit=gbm.best_iteration)
+# score = log_loss(y_valid.tolist(), check)
 #
 # # print("Predict test set...")
 # # test_prediction = gbm.predict(xgb.DMatrix(test[features]), ntree_limit=gbm.best_iteration)
