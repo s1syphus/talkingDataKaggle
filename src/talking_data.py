@@ -5,6 +5,7 @@
 import pandas as pd
 import os
 import glob
+from sklearn.preprocessing import LabelEncoder
 
 
 def read_or_load_raw_file(file_path):
@@ -71,28 +72,53 @@ def get_installed_histograms(device_ids):
 
 def get_processed_train_data():
     # Check if exists
-    pickled_name = '../data/pickled/processed_train_data.pkl'
+    pickled_name = '../data/pickled/processed_train_data_10.pkl'
     if os.path.isfile(pickled_name):
         return pd.read_pickle(pickled_name)
     else:
         raw_train_data = get_raw_train_data()
         phone_brand_model = read_or_load_raw_file('../data/phone_brand_device_model.csv')
         # Temporary for testing
-        processed_train_data = raw_train_data.head(10)
+        processed_train_data = raw_train_data
         processed_train_data = pd.merge(processed_train_data, phone_brand_model, on=['device_id'])
         # Breaking this apart for clarity
         hists = get_installed_histograms(processed_train_data['device_id'])
         processed_train_data = pd.merge(processed_train_data, hists, on=['device_id'])
-    #    processed_train_data['active_apps_histogram'] = get_histogram('active')
+        # Maybe do this at some point
+        # processed_train_data['active_apps_histogram'] = get_histogram('active')
 
         # remove the id at the end
         processed_train_data = processed_train_data.drop('device_id', axis=1)
-        processed_train_data = processed_train_data.fillna(0)
+        processed_train_data = processed_train_data.fillna(-1)
+        processed_train_data = processed_train_data.apply(LabelEncoder().fit_transform)
         processed_train_data.to_pickle(pickled_name)
         return processed_train_data
 
 
 def get_processed_test_data():
-    raw_test_data = get_raw_test_data()
-    return raw_test_data
+    # Check if exists
+    pickled_name = '../data/pickled/processed_test_data_1k.pkl'
+    if os.path.isfile(pickled_name):
+        return pd.read_pickle(pickled_name)
+    else:
+        raw_test_data = get_raw_test_data()
+        phone_brand_model = read_or_load_raw_file('../data/phone_brand_device_model.csv')
+        # Temporary for testing
+        processed_train_data = raw_test_data.head(1000)
+        processed_train_data = pd.merge(processed_train_data, phone_brand_model, on=['device_id'])
+        # Breaking this apart for clarity
+        hists = get_installed_histograms(processed_train_data['device_id'])
+        processed_train_data = pd.merge(processed_train_data, hists, on=['device_id'])
+        # Maybe do this at some point
+        # processed_train_data['active_apps_histogram'] = get_histogram('active')
+
+        # remove the id at the end
+        processed_train_data = processed_train_data.drop('device_id', axis=1)
+        processed_train_data = processed_train_data.fillna(-1)
+        le = LabelEncoder()
+        le.fit(processed_train_data.columns.values)
+        processed_train_data.columns = le.transform(processed_train_data.columns.values)
+        processed_train_data = processed_train_data.apply(LabelEncoder().fit_transform)
+        processed_train_data.to_pickle(pickled_name)
+        return processed_train_data
 
