@@ -25,8 +25,8 @@ random.seed(2016)
 
 td.read_load_all_data()
 
-train = td.get_processed_train_data()
-# test = td.get_processed_test_data()
+# train = td.get_processed_train_data()
+test = td.get_processed_test_data()
 #
 # # This seems to be doing something
 #

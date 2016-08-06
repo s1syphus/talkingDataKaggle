@@ -91,6 +91,7 @@ def get_processed_train_data():
         return pd.read_pickle(pickled_name)
     else:
         raw_train_data = get_raw_train_data()
+	raw_train_data = raw_train_data.drop(['age', 'gender'])
         phone_brand_model = read_or_load_raw_file('../data/phone_brand_device_model.csv')
         # Temporary for testing
         processed_train_data = raw_train_data
