@@ -130,7 +130,6 @@ def get_processed_test_data():
         # remove the id at the end
         processed_test_data = processed_test_data.drop('device_id', axis=1)
         processed_test_data = processed_test_data.fillna(-1)
-        processed_test_data = processed_test_data.apply(LabelEncoder().fit_transform)
         processed_test_data.to_pickle(pickled_name)
         return processed_test_data
 
